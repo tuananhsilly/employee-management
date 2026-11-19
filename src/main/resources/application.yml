@@ -29,6 +29,11 @@ management:
     env:
       enabled: true
 
+app:
+  security:
+    jwt:
+      expiry: 1h
+
 # Served by /actuator/info.
 info:
   app:

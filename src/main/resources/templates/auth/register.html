@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/layout :: pageHead('Đăng ký')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main>
+	<h1>Đăng ký tài khoản</h1>
+	<form class="auth-form" method="post" th:action="@{/register}" th:object="${registration}" novalidate>
+		<label>Tên đăng nhập
+			<input type="text" th:field="*{username}" th:errorclass="invalid" autocomplete="username">
+			<span class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+		</label>
+		<label>Mật khẩu (ít nhất 8 ký tự)
+			<input type="password" th:field="*{password}" th:errorclass="invalid" autocomplete="new-password">
+			<span class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+		</label>
+		<button type="submit">Đăng ký</button>
+	</form>
+	<p>Đã có tài khoản? <a th:href="@{/login}">Đăng nhập</a></p>
+</main>
+</body>
+</html>

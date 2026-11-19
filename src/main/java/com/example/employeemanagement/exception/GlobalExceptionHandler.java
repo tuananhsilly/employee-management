@@ -7,6 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -72,6 +73,20 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(DuplicateEmailException.class)
 	ResponseEntity<ApiError> handleDuplicateEmail(DuplicateEmailException ex, HttpServletRequest request) {
 		return build(HttpStatus.CONFLICT, ex.getMessage(), request, Map.of("email", ex.getMessage()));
+	}
+
+	/**
+	 * Login with a wrong username or password; never says which of the two was wrong. Other
+	 * authentication failures (e.g. the database is down) stay 500s.
+	 */
+	@ExceptionHandler(BadCredentialsException.class)
+	ResponseEntity<ApiError> handleBadLogin(BadCredentialsException ex, HttpServletRequest request) {
+		return build(HttpStatus.UNAUTHORIZED, "Tên đăng nhập hoặc mật khẩu không đúng", request);
+	}
+
+	@ExceptionHandler(DuplicateUsernameException.class)
+	ResponseEntity<ApiError> handleDuplicateUsername(DuplicateUsernameException ex, HttpServletRequest request) {
+		return build(HttpStatus.CONFLICT, ex.getMessage(), request, Map.of("username", ex.getMessage()));
 	}
 
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)

@@ -16,3 +16,7 @@ input, select, button { font: inherit; padding: 0.35rem 0.5rem; }
 .error { color: #b42318; font-size: 0.9em; }
 input.invalid, select.invalid { border: 1px solid #b42318; }
 button.danger { background: #b42318; color: #fff; border: none; border-radius: 3px; cursor: pointer; }
+.nav-user { margin-left: auto; display: flex; gap: 0.5rem; align-items: center; color: #fff; }
+.nav-user form { margin: 0; }
+.auth-form { display: grid; gap: 0.75rem; max-width: 360px; }
+.auth-form label { display: grid; gap: 0.25rem; }

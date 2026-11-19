@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -22,6 +23,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -35,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import(TestcontainersConfiguration.class)
+@WithMockUser(roles = "ADMIN")
 class EmployeePageControllerTest {
 
 	@Autowired
@@ -85,7 +88,7 @@ class EmployeePageControllerTest {
 
 	@Test
 	void addingValidEmployeeRedirectsToListWhereItAppears() throws Exception {
-		mockMvc.perform(post("/employees/add")
+		mockMvc.perform(post("/employees/add").with(csrf())
 						.param("fullName", "Nguyễn Văn An")
 						.param("email", "an@example.com")
 						.param("phone", "0901234567")
@@ -103,7 +106,7 @@ class EmployeePageControllerTest {
 
 	@Test
 	void invalidInputRedisplaysFormWithVietnameseErrorsAndKeepsInput() throws Exception {
-		mockMvc.perform(post("/employees/add")
+		mockMvc.perform(post("/employees/add").with(csrf())
 						.param("fullName", "")
 						.param("email", "khong-phai-email")
 						.param("phone", "0901234567")
@@ -126,7 +129,7 @@ class EmployeePageControllerTest {
 
 	@Test
 	void unreadableDateIsAFieldErrorInVietnamese() throws Exception {
-		mockMvc.perform(post("/employees/add")
+		mockMvc.perform(post("/employees/add").with(csrf())
 						.param("fullName", "Nguyễn Văn An")
 						.param("email", "an@example.com")
 						.param("hireDate", "31/02/2024")
@@ -141,7 +144,7 @@ class EmployeePageControllerTest {
 	void emailUsedByAnotherEmployeeIsAFieldError() throws Exception {
 		create("Nguyễn Văn An", "an@example.com", 1L);
 
-		mockMvc.perform(post("/employees/add")
+		mockMvc.perform(post("/employees/add").with(csrf())
 						.param("fullName", "Trần Thị Bình")
 						.param("email", "an@example.com")
 						.param("hireDate", "2024-03-01")
@@ -156,7 +159,7 @@ class EmployeePageControllerTest {
 
 	@Test
 	void unknownDepartmentIsAFieldError() throws Exception {
-		mockMvc.perform(post("/employees/add")
+		mockMvc.perform(post("/employees/add").with(csrf())
 						.param("fullName", "Nguyễn Văn An")
 						.param("email", "an@example.com")
 						.param("hireDate", "2024-03-01")
@@ -204,7 +207,7 @@ class EmployeePageControllerTest {
 				.andExpect(content().string(containsString(an.getEmployeeCode())))
 				.andExpect(content().string(containsString("value=\"2024-03-01\"")));
 
-		mockMvc.perform(post("/employees/{id}/edit", an.getId())
+		mockMvc.perform(post("/employees/{id}/edit", an.getId()).with(csrf())
 						.param("fullName", "Nguyễn Văn An")
 						.param("email", "an.nguyen@example.com")
 						.param("position", "Team Lead")
@@ -224,7 +227,7 @@ class EmployeePageControllerTest {
 	void invalidEditRedisplaysFormForTheSameEmployee() throws Exception {
 		EmployeeResponse an = create("Nguyễn Văn An", "an@example.com", 1L);
 
-		mockMvc.perform(post("/employees/{id}/edit", an.getId())
+		mockMvc.perform(post("/employees/{id}/edit", an.getId()).with(csrf())
 						.param("fullName", "")
 						.param("email", "an@example.com")
 						.param("hireDate", "2024-03-01")
@@ -262,7 +265,7 @@ class EmployeePageControllerTest {
 		EmployeeResponse an = create("Nguyễn Văn An", "an@example.com", 1L);
 		create("Trần Thị Bình", "binh@example.com", 1L);
 
-		mockMvc.perform(post("/employees/{id}/delete", an.getId()))
+		mockMvc.perform(post("/employees/{id}/delete", an.getId()).with(csrf()))
 				.andExpect(status().isFound())
 				.andExpect(redirectedUrl("/employees/list"))
 				.andExpect(flash().attribute("message", "Đã xoá nhân viên Nguyễn Văn An"));
@@ -274,7 +277,7 @@ class EmployeePageControllerTest {
 
 	@Test
 	void deletingUnknownEmployeeShowsNotFoundPage() throws Exception {
-		mockMvc.perform(post("/employees/{id}/delete", Long.MAX_VALUE))
+		mockMvc.perform(post("/employees/{id}/delete", Long.MAX_VALUE).with(csrf()))
 				.andExpect(status().isNotFound())
 				.andExpect(view().name("employees/error"));
 	}

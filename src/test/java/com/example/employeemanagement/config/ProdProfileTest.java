@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,10 +21,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * The actual connection still goes to the Testcontainers database.
  */
 @SpringBootTest(properties = { "DB_URL=jdbc:postgresql://db.internal:5432/employees",
-		"DB_USERNAME=employee_app", "DB_PASSWORD=from-the-environment" })
+		"DB_USERNAME=employee_app", "DB_PASSWORD=from-the-environment",
+		"JWT_SECRET=prod-test-secret-from-the-environment-0123", "ADMIN_USERNAME=root",
+		"ADMIN_PASSWORD=prod-test-admin-password" })
 @AutoConfigureMockMvc
 @ActiveProfiles("prod")
 @Import(TestcontainersConfiguration.class)
+@WithMockUser(roles = "ADMIN")
 class ProdProfileTest {
 
 	@Autowired
