@@ -1,0 +1,12 @@
+# Local development (default profile): a PostgreSQL on this machine.
+# Override the connection with DB_URL, DB_USERNAME and DB_PASSWORD; the fallbacks
+# are PostgreSQL's out-of-the-box local defaults, not real credentials.
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/employee_management}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+
+logging:
+  level:
+    com.example.employeemanagement: DEBUG

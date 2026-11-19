@@ -1,0 +1,17 @@
+# Settings shared by every profile. Environment-specific settings live in
+# application-dev.yml (the default) and application-prod.yml.
+spring:
+  application:
+    name: employee-management
+  profiles:
+    default: dev
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+server:
+  servlet:
+    session:
+      # Flash messages use the session; keep its id in a cookie, never in redirect URLs.
+      tracking-modes: cookie
