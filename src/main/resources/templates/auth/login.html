@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/layout :: pageHead('Đăng nhập')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main>
+	<h1>Đăng nhập</h1>
+	<p th:if="${param.error}" class="error">Tên đăng nhập hoặc mật khẩu không đúng</p>
+	<p th:if="${param.logout}" class="flash">Bạn đã đăng xuất.</p>
+	<p th:if="${param.registered}" class="flash">Đăng ký thành công, hãy đăng nhập.</p>
+	<!-- Spring Security handles POST /login; th:action adds the CSRF token. -->
+	<form class="auth-form" method="post" th:action="@{/login}">
+		<label>Tên đăng nhập
+			<input type="text" name="username" autocomplete="username" autofocus>
+		</label>
+		<label>Mật khẩu
+			<input type="password" name="password" autocomplete="current-password">
+		</label>
+		<button type="submit">Đăng nhập</button>
+	</form>
+	<p>Chưa có tài khoản? <a th:href="@{/register}">Đăng ký</a></p>
+</main>
+</body>
+</html>

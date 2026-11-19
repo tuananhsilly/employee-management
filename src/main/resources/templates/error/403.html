@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/layout :: pageHead('Không có quyền')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main>
+	<h1>Không có quyền truy cập</h1>
+	<p>Tài khoản của bạn không có quyền xem trang này hoặc thực hiện thao tác này.</p>
+	<a th:href="@{/employees/list}">Quay lại danh sách</a>
+</main>
+</body>
+</html>
