@@ -4,6 +4,9 @@ import com.example.employeemanagement.dto.EmployeeRequest;
 import com.example.employeemanagement.dto.EmployeeResponse;
 import com.example.employeemanagement.entity.Department;
 import com.example.employeemanagement.entity.Employee;
+import com.example.employeemanagement.exception.DuplicateEmailException;
+import com.example.employeemanagement.exception.InvalidReferenceException;
+import com.example.employeemanagement.exception.ResourceNotFoundException;
 import com.example.employeemanagement.repository.DepartmentRepository;
 import com.example.employeemanagement.repository.EmployeeRepository;
 import com.example.employeemanagement.repository.EmployeeSpecifications;
@@ -11,12 +14,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -40,29 +39,31 @@ public class EmployeeService {
 
 	@Transactional
 	public EmployeeResponse create(EmployeeRequest request) {
+		if (employeeRepository.existsByEmail(request.getEmail())) {
+			throw new DuplicateEmailException(request.getEmail());
+		}
 		Employee employee = modelMapper.map(request, Employee.class);
 		employee.setDepartment(findDepartment(request.getDepartmentId()));
 		employee.setEmployeeCode(utilityService.nextEmployeeCode());
 		return toResponse(employeeRepository.save(employee));
 	}
 
-	/** Updates every field except the Employee Code; empty if no Employee has this id. */
+	/** Updates every field except the Employee Code. */
 	@Transactional
-	public Optional<EmployeeResponse> update(Long id, EmployeeRequest request) {
-		return employeeRepository.findById(id).map(employee -> {
-			modelMapper.map(request, employee);
-			employee.setDepartment(findDepartment(request.getDepartmentId()));
-			return toResponse(employee);
-		});
+	public EmployeeResponse update(Long id, EmployeeRequest request) {
+		Employee employee = findEmployee(id);
+		if (employeeRepository.existsByEmailAndIdNot(request.getEmail(), id)) {
+			throw new DuplicateEmailException(request.getEmail());
+		}
+		modelMapper.map(request, employee);
+		employee.setDepartment(findDepartment(request.getDepartmentId()));
+		return toResponse(employee);
 	}
 
-	/** Hard-deletes the Employee; false if no Employee has this id. */
+	/** Hard-deletes the Employee. */
 	@Transactional
-	public boolean delete(Long id) {
-		return employeeRepository.findById(id).map(employee -> {
-			employeeRepository.delete(employee);
-			return true;
-		}).orElse(false);
+	public void delete(Long id) {
+		employeeRepository.delete(findEmployee(id));
 	}
 
 	/** One page of Employees matching the optional filters, sorted by Employee Code. */
@@ -72,18 +73,18 @@ public class EmployeeService {
 				.map(this::toResponse);
 	}
 
-	public Optional<EmployeeResponse> findById(Long id) {
-		return employeeRepository.findById(id).map(this::toResponse);
+	public EmployeeResponse findById(Long id) {
+		return toResponse(findEmployee(id));
 	}
 
-	// Lab 5 replaces this with proper validation and the global error shape.
+	private Employee findEmployee(Long id) {
+		return employeeRepository.findById(id).orElseThrow(() -> ResourceNotFoundException.employee(id));
+	}
+
+	/** The request is already validated, so {@code departmentId} is not null. */
 	private Department findDepartment(Long departmentId) {
-		if (departmentId == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "departmentId is required");
-		}
 		return departmentRepository.findById(departmentId)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"Department " + departmentId + " does not exist"));
+				.orElseThrow(() -> InvalidReferenceException.department(departmentId));
 	}
 
 	private EmployeeResponse toResponse(Employee employee) {

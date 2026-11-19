@@ -3,6 +3,7 @@ package com.example.employeemanagement.controller;
 import com.example.employeemanagement.dto.EmployeeRequest;
 import com.example.employeemanagement.dto.EmployeeResponse;
 import com.example.employeemanagement.service.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -52,21 +53,22 @@ public class EmployeeController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<EmployeeResponse> findById(@PathVariable Long id) {
-		return ResponseEntity.of(employeeService.findById(id));
+		return ResponseEntity.ok(employeeService.findById(id));
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<EmployeeResponse> update(@PathVariable Long id, @RequestBody EmployeeRequest request) {
-		return ResponseEntity.of(employeeService.update(id, request));
+	public ResponseEntity<EmployeeResponse> update(@PathVariable Long id, @Valid @RequestBody EmployeeRequest request) {
+		return ResponseEntity.ok(employeeService.update(id, request));
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		return employeeService.delete(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+		employeeService.delete(id);
+		return ResponseEntity.noContent().build();
 	}
 
 	@PostMapping
-	public ResponseEntity<EmployeeResponse> create(@RequestBody EmployeeRequest request) {
+	public ResponseEntity<EmployeeResponse> create(@Valid @RequestBody EmployeeRequest request) {
 		EmployeeResponse created = employeeService.create(request);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
 				.path("/{id}")

@@ -28,7 +28,7 @@ public class UtilityService {
 
 	/**
 	 * Trims, collapses inner whitespace and capitalises each word: "  nGUYỄN   văn an " → "Nguyễn Văn An".
-	 * A null or blank name becomes "" (rejecting it is validation's job, Lab 5).
+	 * A null or blank name becomes "" (the Employee API rejects blank names via EmployeeRequest validation).
 	 */
 	public String formatFullName(String fullName) {
 		if (fullName == null || fullName.isBlank()) {
