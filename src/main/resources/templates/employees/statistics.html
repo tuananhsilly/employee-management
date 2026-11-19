@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/layout :: pageHead('Thống kê nhân viên')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main>
+	<h1>Thống kê nhân viên</h1>
+
+	<p class="stat-total">Tổng số nhân viên: <strong th:text="${total.totalEmployees}">42</strong></p>
+
+	<section class="stat-section">
+		<h2>Theo phòng ban</h2>
+		<table>
+			<thead>
+			<tr>
+				<th>Phòng ban</th>
+				<th>Số nhân viên</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="row : ${byDepartment}">
+				<td th:text="${row.departmentName}">IT</td>
+				<td th:text="${row.employeeCount}">10</td>
+			</tr>
+			</tbody>
+		</table>
+	</section>
+
+	<section class="stat-section">
+		<h2>Tuyển dụng theo tháng (12 tháng gần nhất)</h2>
+		<table>
+			<thead>
+			<tr>
+				<th>Tháng</th>
+				<th>Số nhân viên mới</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="row : ${hiresByMonth}">
+				<td th:text="${#temporals.format(row.month, 'MM/yyyy')}">01/2026</td>
+				<td th:text="${row.hires}">2</td>
+			</tr>
+			</tbody>
+		</table>
+	</section>
+</main>
+</body>
+</html>
