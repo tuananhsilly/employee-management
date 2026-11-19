@@ -41,6 +41,12 @@ With the app running, HR staff can manage Employees in the browser:
 - `/employees/search` — search by name and/or Department
 - `/employees/add` and `/employees/{id}/edit` — add or edit an Employee; validation errors appear next to each field
 
+## Operations
+
+- Actuator: `/actuator/health`, `/actuator/info` and `/actuator/metrics` are exposed; other endpoints are not.
+- `GET /api/reports/employee-count` returns `{"totalEmployees": n}`. The value is cached with Caffeine for 1 minute (expire-after-write) and evicted whenever an Employee is created or deleted.
+- A scheduled task logs `System running` every 30 seconds.
+
 ## Tests
 
 ```bash

@@ -9,9 +9,28 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+  cache:
+    cache-names: employee-count
+    caffeine:
+      spec: expireAfterWrite=1m
 
 server:
   servlet:
     session:
       # Flash messages use the session; keep its id in a cookie, never in redirect URLs.
       tracking-modes: cookie
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+  info:
+    env:
+      enabled: true
+
+# Served by /actuator/info.
+info:
+  app:
+    name: ${spring.application.name}
+    description: Employee Management System - Spring Boot learning mini project
