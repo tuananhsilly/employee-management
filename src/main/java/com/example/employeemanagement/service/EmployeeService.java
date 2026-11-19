@@ -1,5 +1,6 @@
 package com.example.employeemanagement.service;
 
+import com.example.employeemanagement.config.CacheConfig;
 import com.example.employeemanagement.dto.EmployeeRequest;
 import com.example.employeemanagement.dto.EmployeeResponse;
 import com.example.employeemanagement.entity.Department;
@@ -13,6 +14,7 @@ import com.example.employeemanagement.repository.EmployeeSpecifications;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -44,6 +46,7 @@ public class EmployeeService {
 	}
 
 	@Transactional
+	@CacheEvict(cacheNames = CacheConfig.EMPLOYEE_COUNT, allEntries = true)
 	public EmployeeResponse create(EmployeeRequest request) {
 		if (employeeRepository.existsByEmail(request.getEmail())) {
 			throw new DuplicateEmailException(request.getEmail());
@@ -71,6 +74,7 @@ public class EmployeeService {
 
 	/** Hard-deletes the Employee. */
 	@Transactional
+	@CacheEvict(cacheNames = CacheConfig.EMPLOYEE_COUNT, allEntries = true)
 	public void delete(Long id) {
 		Employee employee = findEmployee(id);
 		employeeRepository.delete(employee);
