@@ -40,6 +40,7 @@ With the app running, HR staff can manage Employees in the browser:
 - `/employees/list` — paginated Employee list with edit and delete (delete asks for confirmation)
 - `/employees/search` — search by name and/or Department
 - `/employees/add` and `/employees/{id}/edit` — add or edit an Employee; validation errors appear next to each field
+- `/employees/statistics` — total Employees, Employees per Department and hires per month (both Roles)
 
 ## Security
 
@@ -60,6 +61,10 @@ curl localhost:8080/api/employees -H "Authorization: Bearer <accessToken>"
 
 - Actuator: `/actuator/health` (public), `/actuator/info` and `/actuator/metrics` (Admins only) are exposed; other endpoints are not.
 - `GET /api/reports/employee-count` returns `{"totalEmployees": n}`. The value is cached with Caffeine for 1 minute (expire-after-write) and evicted whenever an Employee is created or deleted.
+- Statistics (both Roles, computed by `@Query` aggregates, not cached):
+  - `GET /api/statistics/total` returns `{"totalEmployees": n}`
+  - `GET /api/statistics/by-department` returns `[{"departmentId", "departmentName", "employeeCount"}]` for every Department, including those with 0
+  - `GET /api/statistics/hires-by-month` returns `[{"month": "yyyy-MM", "hires": n}]` for the current month and the 11 before it, oldest first, with 0 for months without hires
 - A scheduled task logs `System running` every 30 seconds.
 
 ## Tests
