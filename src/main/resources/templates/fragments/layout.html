@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:fragment="pageHead(title)">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title th:text="${title} + ' - Quản lý nhân viên'">Quản lý nhân viên</title>
+	<link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<nav th:fragment="navbar" class="nav">
+	<a th:href="@{/employees/list}">Danh sách</a>
+	<a th:href="@{/employees/search}">Tìm kiếm</a>
+	<a th:href="@{/employees/add}">Thêm nhân viên</a>
+</nav>
+
+<!-- Flash message set after a successful add, edit or delete. -->
+<p th:fragment="flash" th:if="${message}" class="flash" th:text="${message}">Đã lưu</p>
+
+<!-- Employee table with edit and delete actions. Expects ${employees} (a Page) and ${departmentNames}. -->
+<div th:fragment="employeeTable">
+	<p th:if="${employees.empty}" class="empty">Không có nhân viên nào.</p>
+	<table th:unless="${employees.empty}">
+		<thead>
+		<tr>
+			<th>Mã NV</th>
+			<th>Họ tên</th>
+			<th>Email</th>
+			<th>Số điện thoại</th>
+			<th>Chức vụ</th>
+			<th>Ngày vào làm</th>
+			<th>Phòng ban</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr th:each="employee : ${employees.content}">
+			<td th:text="${employee.employeeCode}">EMP00001</td>
+			<td th:text="${employee.fullName}">Nguyễn Văn An</td>
+			<td th:text="${employee.email}">an@example.com</td>
+			<td th:text="${employee.phone}">0901234567</td>
+			<td th:text="${employee.position}">Developer</td>
+			<td th:text="${#temporals.format(employee.hireDate, 'dd/MM/yyyy')}">01/03/2024</td>
+			<td th:text="${departmentNames[employee.departmentId]}">IT</td>
+			<td class="actions">
+				<a th:href="@{/employees/{id}/edit(id=${employee.id})}">Sửa</a>
+				<form th:action="@{/employees/{id}/delete(id=${employee.id})}" method="post"
+					  th:data-name="${employee.fullName}"
+					  onsubmit="return confirm('Xoá nhân viên ' + this.dataset.name + '?')">
+					<button type="submit" class="danger">Xoá</button>
+				</form>
+			</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+
+<!-- Previous/next links. Expects ${employees} (a Page) and ${pageUrl} (the page URL with its filters, without page). -->
+<nav th:fragment="pager" class="pager" th:if="${employees.totalPages > 1}">
+	<a th:if="${employees.hasPrevious()}" th:href="@{${pageUrl}(page=${employees.number - 1})}">&laquo; Trước</a>
+	<span th:text="|Trang ${employees.number + 1} / ${employees.totalPages} (${employees.totalElements} nhân viên)|">Trang 1 / 2</span>
+	<a th:if="${employees.hasNext()}" th:href="@{${pageUrl}(page=${employees.number + 1})}">Sau &raquo;</a>
+</nav>
+
+</body>
+</html>

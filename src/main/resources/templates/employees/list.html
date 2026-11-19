@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/layout :: pageHead('Danh sách nhân viên')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main>
+	<h1>Danh sách nhân viên</h1>
+	<p th:replace="~{fragments/layout :: flash}"></p>
+	<div th:replace="~{fragments/layout :: employeeTable}"></div>
+	<nav th:replace="~{fragments/layout :: pager}"></nav>
+</main>
+</body>
+</html>

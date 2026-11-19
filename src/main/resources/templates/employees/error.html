@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head th:replace="~{fragments/layout :: pageHead('Lỗi')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main>
+	<h1>Không thể hiển thị trang</h1>
+	<p th:text="${message}">Không tìm thấy nhân viên</p>
+	<a th:href="@{/employees/list}">Quay lại danh sách</a>
+</main>
+</body>
+</html>

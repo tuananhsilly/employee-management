@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -25,6 +26,7 @@ public class EmployeeRequest {
 	private String position;
 
 	@NotNull(message = "Ngày vào làm không được để trống")
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) // yyyy-MM-dd, what <input type="date"> submits
 	private LocalDate hireDate;
 
 	@NotNull(message = "Phòng ban không được để trống")
