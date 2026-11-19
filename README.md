@@ -17,6 +17,14 @@ curl localhost:8080/hello
 
 Without a local database, `./mvnw spring-boot:test-run` starts the app against a PostgreSQL container (needs Docker).
 
+## Web pages
+
+With the app running, HR staff can manage Employees in the browser:
+
+- `/employees/list` — paginated Employee list with edit and delete (delete asks for confirmation)
+- `/employees/search` — search by name and/or Department
+- `/employees/add` and `/employees/{id}/edit` — add or edit an Employee; validation errors appear next to each field
+
 ## Tests
 
 ```bash

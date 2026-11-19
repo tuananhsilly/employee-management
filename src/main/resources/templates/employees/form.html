@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi"
+	  th:with="editing=${employeeId != null}, title=${editing ? 'Sửa nhân viên' : 'Thêm nhân viên'}">
+<head th:replace="~{fragments/layout :: pageHead(${title})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main>
+	<h1 th:text="${title}">Thêm nhân viên</h1>
+	<p th:if="${employeeCode}" th:text="|Mã nhân viên: ${employeeCode}|">Mã nhân viên: EMP00001</p>
+
+	<!-- Used for both add and edit; ${employeeId} is only set when editing. -->
+	<form class="employee-form" method="post" th:object="${employee}" novalidate
+		  th:action="${editing} ? @{/employees/{id}/edit(id=${employeeId})} : @{/employees/add}">
+		<label>Họ tên *
+			<input type="text" th:field="*{fullName}" th:errorclass="invalid">
+			<span class="error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
+		</label>
+		<label>Email *
+			<input type="email" th:field="*{email}" th:errorclass="invalid">
+			<span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+		</label>
+		<label>Số điện thoại
+			<input type="text" th:field="*{phone}" th:errorclass="invalid">
+			<span class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
+		</label>
+		<label>Chức vụ
+			<input type="text" th:field="*{position}" th:errorclass="invalid">
+			<span class="error" th:if="${#fields.hasErrors('position')}" th:errors="*{position}"></span>
+		</label>
+		<label>Ngày vào làm *
+			<input type="date" th:field="*{hireDate}" th:errorclass="invalid">
+			<span class="error" th:if="${#fields.hasErrors('hireDate')}" th:errors="*{hireDate}"></span>
+		</label>
+		<label>Phòng ban *
+			<select th:field="*{departmentId}" th:errorclass="invalid">
+				<option value="">-- Chọn phòng ban --</option>
+				<option th:each="department : ${departments}" th:value="${department.id}" th:text="${department.name}">IT</option>
+			</select>
+			<span class="error" th:if="${#fields.hasErrors('departmentId')}" th:errors="*{departmentId}"></span>
+		</label>
+		<div>
+			<button type="submit">Lưu</button>
+			<a th:href="@{/employees/list}">Huỷ</a>
+		</div>
+	</form>
+</main>
+</body>
+</html>
